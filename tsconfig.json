@@ -8,6 +8,15 @@
     },
     {
       "path": "./packages/cli"
+    },
+    {
+      "path": "./packages/core"
+    },
+    {
+      "path": "./rules"
+    },
+    {
+      "path": "./packages/actions"
     }
   ]
 }
