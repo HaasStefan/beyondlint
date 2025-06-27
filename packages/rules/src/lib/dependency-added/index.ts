@@ -1,5 +1,6 @@
 import { exec } from 'node:child_process';
 import { getAllDeps } from './utils/get-all-deps.js';
+import { pruneExternalDeps } from './utils/external-deps.js';
 
 export type DependencyAddedResult = {
   moduleSpecifier: string;
@@ -26,15 +27,17 @@ export async function dependencyAddedRule(
     return null; // No imports added
   }
 
+  const workspaceRoot = process.env['BEYONDLINT_WORKSPACE_ROOT'];
   const allDeps = getAllDeps(projectRoot);
-  const addedModuleSpecifiers = imports
+  const addedModuleSpecifiers = pruneExternalDeps(
+  imports
     .map((line) => {
       const match = line.match(/['"]([^'"]+)['"]/);
       return match ? match[1] : null;
     })
     .filter(
       (moduleSpecifier): moduleSpecifier is string => moduleSpecifier !== null
-    );
+    ), workspaceRoot || projectRoot);
 
   const gitDiffModuleSpecifierCounts = addedModuleSpecifiers.reduce(
     (acc, moduleSpecifier) => {
@@ -54,7 +57,10 @@ export async function dependencyAddedRule(
         console.log(
           `Module Specifier: ${moduleSpecifier}, Count in allDeps: ${
             allDeps[moduleSpecifier] || 0
-          }, Count in git diff: ${gitDiffModuleSpecifierCounts[moduleSpecifier] || 0}`, count
+          }, Count in git diff: ${
+            gitDiffModuleSpecifierCounts[moduleSpecifier] || 0
+          }`,
+          count
         );
 
         if (count <= 0) {

@@ -18,8 +18,12 @@ program
     console.log(`CI Mode: ${ci}`);
 
     await dependencyAddedRule(
-      'packages/cli',
+      'packages/rules',
       ['@beyondlint/abc'],
+    {
+      base: 'b21e8019ed34641b337113b1861a048f75708267',
+      head: '745e0ba74b466fadfd05da984d600a2e6b21fa80',
+    }
     );
   });
 
