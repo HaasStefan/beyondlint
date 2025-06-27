@@ -1,9 +1,8 @@
 import { exec } from 'node:child_process';
+import { getAllDeps } from './utils/get-all-deps.js';
 
 export type DependencyAddedResult = {
-  filePath: string;
-  dependencyName: string;
-  added: boolean;
+  moduleSpecifier: string;
 };
 
 type GitOptions = {
@@ -12,27 +11,92 @@ type GitOptions = {
 };
 
 export async function dependencyAddedRule(
-  filePath: string,
+  projectRoot: string,
   allowList: string[],
-  gitOptions: GitOptions = { head: 'HEAD', base: 'main' }
+  gitOptions: GitOptions = { head: 'HEAD', base: 'origin/main' }
 ): Promise<DependencyAddedResult | null> {
-  const gitDiffLines = await getLinesFromGitDiffAsync(filePath, gitOptions);
+  const { added } = await getLinesFromGitDiffAsync(projectRoot, gitOptions);
+  const imports = added.filter(
+    (line) =>
+      line.startsWith('import') ||
+      line.startsWith('require') ||
+      line.includes('import(')
+  );
+  if (imports.length === 0) {
+    return null; // No imports added
+  }
 
-  return gitDiffLines as any as null;
+  const allDeps = getAllDeps(projectRoot);
+  const addedModuleSpecifiers = imports
+    .map((line) => {
+      const match = line.match(/['"]([^'"]+)['"]/);
+      return match ? match[1] : null;
+    })
+    .filter(
+      (moduleSpecifier): moduleSpecifier is string => moduleSpecifier !== null
+    );
+
+  const gitDiffModuleSpecifierCounts = addedModuleSpecifiers.reduce(
+    (acc, moduleSpecifier) => {
+      acc[moduleSpecifier] = (acc[moduleSpecifier] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>
+  );
+
+  const violations = addedModuleSpecifiers
+    .map((moduleSpecifier) => {
+      if (!allowList.includes(moduleSpecifier)) {
+        const count =
+          (allDeps[moduleSpecifier] || 0) -
+            gitDiffModuleSpecifierCounts[moduleSpecifier] || 0;
+
+        console.log(
+          `Module Specifier: ${moduleSpecifier}, Count in allDeps: ${
+            allDeps[moduleSpecifier] || 0
+          }, Count in git diff: ${gitDiffModuleSpecifierCounts[moduleSpecifier] || 0}`, count
+        );
+
+        if (count <= 0) {
+          return {
+            moduleSpecifier,
+          };
+        }
+      }
+
+      return null;
+    })
+    .filter(Boolean);
+
+  if (violations.length > 0) {
+    return violations[0]; // Return the first violation found
+  }
+
+  return null;
 }
 
 export default dependencyAddedRule;
 
 async function getLinesFromGitDiffAsync(
-  filePath: string,
+  path: string,
   gitOptions: GitOptions
 ): Promise<{ added: string[]; removed: string[] }> {
-  const diff = await runGitDiffCommandAsync(filePath, gitOptions);
-  console.log(`Git diff for ${filePath}:\n${diff}`);
+  const diff = await runGitDiffCommandAsync(path, gitOptions);
+  const lines = diff.split('\n');
+  const added: string[] = [];
+  const removed: string[] = [];
+
+  for (const line of lines) {
+    if (line.startsWith('+') && !line.startsWith('+++')) {
+      added.push(line.slice(1).trim());
+    } else if (line.startsWith('-') && !line.startsWith('---')) {
+      removed.push(line.slice(1).trim());
+    }
+  }
 
   return {
-    added: [],
-    removed: [],
+    added,
+    removed,
   };
 }
 

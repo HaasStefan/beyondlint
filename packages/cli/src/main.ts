@@ -18,8 +18,8 @@ program
     console.log(`CI Mode: ${ci}`);
 
     await dependencyAddedRule(
-      'packages/cli/nx.json',
-      ['allowed-dependency'],
+      'packages/cli',
+      ['@beyondlint/abc'],
     );
   });
 
