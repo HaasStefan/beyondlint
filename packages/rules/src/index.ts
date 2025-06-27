@@ -1,1 +1,2 @@
-export * from './lib/rules.js';
+
+export { dependencyAddedRule } from './lib/dependency-added/index.js';

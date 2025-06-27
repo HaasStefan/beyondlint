@@ -40,7 +40,7 @@
       "options": {
         "targetName": "test"
       },
-      "exclude": ["packages/cli-e2e/**/*"]
+      "exclude": ["packages/cli-e2e/**/*", "packages/cli-e2e/**/*"]
     }
   ],
   "targetDefaults": {
