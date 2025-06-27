@@ -1,7 +1,12 @@
 {
-  "name": "@beyondlint-cp/cli",
+  "name": "@beyondlint/cli",
   "version": "0.0.1",
   "private": true,
+  "type": "module",
+  "dependencies": {
+    "@beyondlint/rules": "workspace:*",
+    "tslib": "^2.3.0"
+  },
   "nx": {
     "targets": {
       "build": {
@@ -14,7 +19,7 @@
           "platform": "node",
           "outputPath": "packages/cli/dist",
           "format": [
-            "cjs"
+            "esm"
           ],
           "bundle": false,
           "main": "packages/cli/src/main.ts",
@@ -49,15 +54,15 @@
           "build"
         ],
         "options": {
-          "buildTarget": "@beyondlint-cp/cli:build",
+          "buildTarget": "@beyondlint/cli:build",
           "runBuildTargetDependencies": false
         },
         "configurations": {
           "development": {
-            "buildTarget": "@beyondlint-cp/cli:build:development"
+            "buildTarget": "@beyondlint/cli:build:development"
           },
           "production": {
-            "buildTarget": "@beyondlint-cp/cli:build:production"
+            "buildTarget": "@beyondlint/cli:build:production"
           }
         }
       },

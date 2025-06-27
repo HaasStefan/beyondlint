@@ -4,6 +4,9 @@
   "include": [],
   "references": [
     {
+      "path": "../rules"
+    },
+    {
       "path": "./tsconfig.app.json"
     },
     {

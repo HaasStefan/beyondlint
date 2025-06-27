@@ -10,7 +10,7 @@ const swcJestConfig = JSON.parse(
 swcJestConfig.swcrc = false;
 
 export default {
-  displayName: '@beyondlint-cp/rules',
+  displayName: '@beyondlint/rules',
   preset: '../../jest.preset.js',
   testEnvironment: 'node',
   transform: {
