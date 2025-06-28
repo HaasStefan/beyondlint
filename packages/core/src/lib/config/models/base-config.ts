@@ -7,7 +7,10 @@ export interface PluginConfig {
   options?: Record<string, unknown>;
 }
 
+export type Plugin = PluginName | PluginConfig;
+export type Plugins = Plugin[];
+
 export interface BaseConfig {
-  plugins?: (PluginName | PluginConfig)[];
+  plugins?: Plugins;
   rules?: RulesConfig;
 }
