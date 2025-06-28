@@ -11,23 +11,29 @@
   "rules": {
     "@beyondlint/internal-dependency-added": {
       "enabled": true,
-      "allowList": [],
-      "gitOptions": {
-        "base": "main",
-        "head": "HEAD"
+      "options": {
+        "allowList": [],
+        "gitOptions": {
+          "base": "main",
+          "head": "HEAD"
+        }
       },
       "actions": {
         "@beyondlint/github-pr-comment": {
           "enabled": true,
           "forwardMessage": true,
           "forwardResult": false,
-          "resolved": "false"
+          "options": {
+            "resolved": "false"
+          }
         },
         "@beyondlint/github-create-issue": {
           "enabled": true,
           "forwardMessage": true,
           "forwardResult": false,
-          "linkToPullRequest": true
+          "options": {
+            "linkToPullRequest": true
+          }
         }
       }
     }
