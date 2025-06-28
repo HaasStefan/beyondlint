@@ -1,6 +1,7 @@
 {
   "extends": "../../.beyondlint.base.json",
   "tsconfigPath": "./tsconfig.json",
+  "sourceRoot": "./src",
   "rules": {
     "@beyondlint/internal-dependency-added": {
       "enabled": false

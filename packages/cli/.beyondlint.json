@@ -1,0 +1,5 @@
+{
+  "extends": "../../.beyondlint.base.json",
+  "tsconfigPath": "./tsconfig.json",
+  "sourceRoot": "./src"
+}
