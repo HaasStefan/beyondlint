@@ -10,9 +10,6 @@ export function pruneExternalDeps(
     ...packageJson['devDependencies'],
   });
 
-  console.log(`Pruning external dependencies in ${workspaceRoot}`);
-  console.log(`External dependencies: ${deps.join(', ')}`);
-
   return deps.filter(dep => !dependencies.includes(dep));
 }
 

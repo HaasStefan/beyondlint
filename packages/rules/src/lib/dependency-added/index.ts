@@ -3,7 +3,10 @@ import { getAllDeps } from './utils/get-all-deps.js';
 import { pruneExternalDeps } from './utils/external-deps.js';
 
 export type DependencyAddedResult = {
-  moduleSpecifier: string;
+  moduleSpecifiers: string[];
+  projectRoot: string;
+  allowList: string[];
+  gitOptions: GitOptions;
 };
 
 type GitOptions = {
@@ -20,34 +23,37 @@ export async function dependencyAddedRule(
   const imports = added.filter(
     (line) =>
       line.startsWith('import') ||
-      line.startsWith('require') ||
-      line.includes('import(')
+      // match regex for dynamic imports
+      line.match(/import\(['"][^'"]+['"]\)/) ||
+      line.match(/require\(['"][^'"]+['"]\)/)
   );
   if (imports.length === 0) {
     return null; // No imports added
   }
 
-  const workspaceRoot = process.env['BEYONDLINT_WORKSPACE_ROOT'];
+  const workspaceRoot = process.env['BEYONDLINT_WORKSPACE_ROOT'] || './';
   const allDeps = getAllDeps(projectRoot);
-  const addedModuleSpecifiers = pruneExternalDeps(
-  imports
+  const addedModuleSpecifiers = imports
     .map((line) => {
       const match = line.match(/['"]([^'"]+)['"]/);
       return match ? match[1] : null;
     })
     .filter(
       (moduleSpecifier): moduleSpecifier is string => moduleSpecifier !== null
-    ), workspaceRoot || projectRoot);
+    )
+    .filter(
+      (moduleSpecifier) =>
+        !moduleSpecifier.startsWith('.') && !moduleSpecifier.includes(':')
+    );
 
-  const gitDiffModuleSpecifierCounts = addedModuleSpecifiers.reduce(
-    (acc, moduleSpecifier) => {
-      acc[moduleSpecifier] = (acc[moduleSpecifier] || 0) + 1;
-      return acc;
-    },
-    {} as Record<string, number>
-  );
+  const deps = pruneExternalDeps(addedModuleSpecifiers, workspaceRoot);
 
-  const violations = addedModuleSpecifiers
+  const gitDiffModuleSpecifierCounts = deps.reduce((acc, moduleSpecifier) => {
+    acc[moduleSpecifier] = (acc[moduleSpecifier] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const violations = deps
     .map((moduleSpecifier) => {
       if (!allowList.includes(moduleSpecifier)) {
         const count =
@@ -64,18 +70,18 @@ export async function dependencyAddedRule(
         );
 
         if (count <= 0) {
-          return {
-            moduleSpecifier,
-          };
+          return moduleSpecifier;
         }
       }
 
       return null;
     })
-    .filter(Boolean);
+    .filter(
+      (moduleSpecifier): moduleSpecifier is string => moduleSpecifier !== null
+    );
 
   if (violations.length > 0) {
-    return violations[0]; // Return the first violation found
+    return { moduleSpecifiers: violations, projectRoot, allowList, gitOptions };
   }
 
   return null;

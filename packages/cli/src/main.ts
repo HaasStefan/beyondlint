@@ -18,7 +18,7 @@ program
     console.log(`CI Mode: ${ci}`);
 
     await dependencyAddedRule(
-      'packages/rules',
+      'packages/cli',
       ['@beyondlint/abc'],
     {
       base: 'b21e8019ed34641b337113b1861a048f75708267',
