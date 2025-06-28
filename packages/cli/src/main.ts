@@ -1,5 +1,6 @@
 import { program } from 'commander';
 import { dependencyAddedRule } from '@beyondlint/rules';
+import { ConfigParser } from '@beyondlint/core';
 
 program
   .name('beyondlint')
@@ -16,6 +17,10 @@ program
     } = options;
     console.log(`Configuration file path: ${config}`);
     console.log(`CI Mode: ${ci}`);
+
+    const configParser = new ConfigParser();
+
+    configParser.parseBaseConfig();
 
     await dependencyAddedRule(
       'packages/cli',

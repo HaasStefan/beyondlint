@@ -105,6 +105,9 @@ importers:
 
   packages/cli:
     dependencies:
+      '@beyondlint/core':
+        specifier: workspace:*
+        version: link:../core
       '@beyondlint/rules':
         specifier: workspace:*
         version: link:../rules

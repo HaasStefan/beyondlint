@@ -19,6 +19,9 @@
   ],
   "references": [
     {
+      "path": "../core/tsconfig.lib.json"
+    },
+    {
       "path": "../rules/tsconfig.lib.json"
     }
   ]
