@@ -1,18 +1,7 @@
 import { exec } from 'node:child_process';
 import { getAllDeps } from './utils/get-all-deps.js';
 import { pruneExternalDeps } from './utils/external-deps.js';
-
-export type DependencyAddedResult = {
-  moduleSpecifiers: string[];
-  projectRoot: string;
-  allowList: string[];
-  gitOptions: GitOptions;
-};
-
-type GitOptions = {
-  head: string;
-  base: string;
-};
+import { DependencyAddedResult, GitOptions } from './utils/models.js';
 
 export async function dependencyAddedRule(
   projectRoot: string,

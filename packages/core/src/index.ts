@@ -1,1 +1,1 @@
-export * from './lib/core.js';
+export { MessageLevel, type Message } from "./lib/message.js"

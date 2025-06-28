@@ -1,0 +1,33 @@
+{
+  "plugins": [
+    "@beyondlint/dependencies",
+    {
+      "plugin": "@beyondlint/github",
+      "options": {
+        "token": "${GITHUB_TOKEN}"
+      }
+    }
+  ],
+  "rules": {
+    "@beyondlint/internal-dependency-added": {
+      "enabled": true,
+      "allowList": [],
+      "gitOptions": {
+        "base": "main",
+        "head": "HEAD"
+      },
+      "actions": {
+        "@beyondlint/github-pr-comment": {
+          "enabled": true,
+          "forwardMessage": true,
+          "resolved": "false"
+        },
+        "@beyondlint/github-create-issue": {
+          "enabled": true,
+          "forwardMessage": true,
+          "linkToPullRequest": true
+        }
+      }
+    }
+  }
+}
