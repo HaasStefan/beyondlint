@@ -1,6 +1,6 @@
- export type ActionName = `@${string}/${string}`;
- 
-export type ActionsConfig = Record<ActionName, ActionConfig>;
+import { Name } from "../../name.js";
+
+export type ActionsConfig = Record<Name, ActionConfig>;
 export interface ActionConfig {
   enabled?: boolean;
   forwardMessage?: boolean;

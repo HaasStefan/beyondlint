@@ -21,16 +21,12 @@
       "actions": {
         "@beyondlint/github-pr-comment": {
           "enabled": true,
-          "forwardMessage": true,
-          "forwardResult": false,
           "options": {
             "resolved": "false"
           }
         },
         "@beyondlint/github-create-issue": {
           "enabled": true,
-          "forwardMessage": true,
-          "forwardResult": false,
           "options": {
             "linkToPullRequest": true
           }

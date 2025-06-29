@@ -1,13 +1,12 @@
+import { Name } from "../../name.js";
 import { RulesConfig } from "./rules-config.js";
 
-export type PluginName = `@${string}/${string}`;
-
 export interface PluginConfig {
-  plugin: PluginName;
+  plugin: Name;
   options?: Record<string, unknown>;
 }
 
-export type Plugin = PluginName | PluginConfig;
+export type Plugin = Name | PluginConfig;
 export type Plugins = Plugin[];
 
 export interface BaseConfig {

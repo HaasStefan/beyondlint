@@ -5,7 +5,7 @@ export enum MessageLevel {
   DEBUG = 'DEBUG',
 }
 
-export interface Message<T> {
+export interface Message<T = any> {
   level: MessageLevel;
   text: string;
   additionalInfo: T
