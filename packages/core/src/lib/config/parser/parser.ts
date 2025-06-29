@@ -7,11 +7,17 @@ import { ProjectConfig } from '../models/project-config.js';
 
 export class ConfigParser {
   private readonly baseConfig: BaseConfig;
+  private static instance: ConfigParser;
 
-  constructor() {
+  private constructor() {
     this.baseConfig = this.parseBaseConfig();
+  }
 
-    console.log('Parsed base config:\n\n', JSON.stringify(this.baseConfig));
+  static getInstance(): ConfigParser {
+    if (!ConfigParser.instance) {
+      ConfigParser.instance = new ConfigParser();
+    }
+    return ConfigParser.instance;
   }
 
   parseBaseConfig(workspaceRoot = ''): BaseConfig {
