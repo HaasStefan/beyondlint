@@ -1,4 +1,5 @@
 import { BaseConfig } from "./models/base-config.js";
+import { MergedConfig } from "./models/merged-config.js";
 import { ProjectConfig } from "./models/project-config.js";
 
 /**
