@@ -1,5 +1,6 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import ignore from 'ignore';
+import { join } from 'node:path';
 
 export function findAllProjectConfigs(workspaceRoot = ''): string[] {
   const gitIgnore = readGitIgnore(workspaceRoot);
@@ -23,7 +24,7 @@ export function findAllProjectConfigs(workspaceRoot = ''): string[] {
   return configFiles;
 }
 
-function readGitIgnore(workspaceRoot = ''): string[] {
+function readGitIgnore(workspaceRoot: string): string[] {
   const gitIgnorePath =
     workspaceRoot === '' ? '.gitignore' : `${workspaceRoot}/.gitignore`;
 
@@ -67,15 +68,16 @@ function getBaseDirectories(
   ig: ignore.Ignore
 ): string[] {
   const baseDirs: string[] = [];
-  const entries = readdirSync(workspaceRoot, { withFileTypes: true });
+  const entries = readdirSync(workspaceRoot == '' ? '.' : workspaceRoot, { withFileTypes: true });
 
   for (const entry of entries) {
+    const path = join(workspaceRoot, entry.name);
     if (
       entry.isDirectory() &&
       !entry.name.startsWith('.') &&
-      !ig.ignores(`${workspaceRoot}/${entry.name}`)
+      !ig.ignores(path)
     ) {
-      baseDirs.push(`${workspaceRoot}/${entry.name}`);
+      baseDirs.push(path);
     }
   }
 
