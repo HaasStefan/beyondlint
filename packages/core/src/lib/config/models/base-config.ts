@@ -13,3 +13,8 @@ export interface BaseConfig {
   plugins?: Plugins;
   rules?: RulesConfig;
 }
+
+export type MergedConfig = BaseConfig & {
+  sourceRoot: string;
+  tsconfigPath: string;
+};

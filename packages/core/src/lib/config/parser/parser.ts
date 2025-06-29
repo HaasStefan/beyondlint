@@ -3,6 +3,7 @@ import { BaseConfig, Plugins } from '../models/base-config.js';
 import { isName } from '../utils/name-parser.js';
 import { RuleConfig, RulesConfig } from '../models/rules-config.js';
 import { ActionsConfig } from '../models/actions-config.js';
+import { ProjectConfig } from '../models/project-config.js';
 
 export class ConfigParser {
   private readonly baseConfig: BaseConfig;
@@ -37,6 +38,46 @@ export class ConfigParser {
     } catch (error) {
       throw new Error(
         `Failed to read config file at ${configPath}: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
+    }
+  }
+
+  /**
+   * Parses a project configuration file (.beyondlint.json) and returns a ProjectConfig object.
+   * Note: It does not merge with the base config!
+   */
+  parseProjectConfig(filePath: string): ProjectConfig {
+    try {
+      const configContent = readFileSync(filePath, 'utf-8');
+      const json = JSON.parse(configContent);
+
+      if (typeof json !== 'object' || json === null || Array.isArray(json)) {
+        throw new Error('Project config must be a valid JSON object');
+      }
+
+      const objectKeys = Object.keys(json);
+      
+      if (!objectKeys.includes('extends') && typeof json.extends !== 'string') {
+        throw new Error('Project config must have a valid "extends" property');
+      }
+
+      const extendsConfig = json.extends as string;
+      const sourceRoot = objectKeys.includes('sourceRoot') ? json.sourceRoot : null; // null for nested inheritance
+      const tsconfigPath = objectKeys.includes('tsconfigPath') ? json.tsconfigPath : null;
+      const rules = parseRules(json);
+
+      return {
+        extends: extendsConfig,
+        sourceRoot,
+        tsconfigPath,
+        rules
+      };
+
+    } catch (error) {
+      throw new Error(
+        `Failed to read project config file at ${filePath}: ${
           error instanceof Error ? error.message : String(error)
         }`
       );
