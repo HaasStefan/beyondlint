@@ -1,8 +1,8 @@
 import { readFileSync } from 'node:fs';
-import { BaseConfig, Plugins } from './models/base-config.js';
-import { isName } from './utils/name-parser.js';
-import { RuleConfig, RulesConfig } from './models/rules-config.js';
-import { ActionsConfig } from './models/actions-config.js';
+import { BaseConfig, Plugins } from '../models/base-config.js';
+import { isName } from '../utils/name-parser.js';
+import { RuleConfig, RulesConfig } from '../models/rules-config.js';
+import { ActionsConfig } from '../models/actions-config.js';
 
 export class ConfigParser {
   private readonly baseConfig: BaseConfig;
