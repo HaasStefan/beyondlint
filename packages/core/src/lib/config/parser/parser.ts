@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { BaseConfig, Plugins } from '../models/base-config.js';
-import { isName } from '../utils/name-parser.js';
+import { isName } from '../../name.js';
 import { RuleConfig, RulesConfig } from '../models/rules-config.js';
 import { ActionsConfig } from '../models/actions-config.js';
 import { ProjectConfig } from '../models/project-config.js';
@@ -11,6 +11,7 @@ export class ConfigParser {
 
   private constructor() {
     this.baseConfig = this.parseBaseConfig();
+    console.log(this.baseConfig);
   }
 
   static getInstance(): ConfigParser {
