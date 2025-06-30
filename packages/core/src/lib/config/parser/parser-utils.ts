@@ -2,7 +2,8 @@ import { readdirSync, readFileSync } from 'node:fs';
 import ignore from 'ignore';
 import { join } from 'node:path';
 
-export function findAllProjectConfigs(workspaceRoot = ''): string[] {
+export function findAllProjectConfigs(): string[] {
+  const workspaceRoot = process.env.BEYONDLINT_WORKSPACE_ROOT || '';
   const gitIgnore = readGitIgnore(workspaceRoot);
   const ig = ignore().add(gitIgnore);
   const baseDirs = getBaseDirectories(workspaceRoot, ig);

@@ -1,17 +1,15 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { BaseConfig, Plugins } from '../models/base-config.js';
 import { isName } from '../../name.js';
 import { RuleConfig, RulesConfig } from '../models/rules-config.js';
 import { ActionsConfig } from '../models/actions-config.js';
 import { ProjectConfig } from '../models/project-config.js';
-
 export class ConfigParser {
-  private readonly baseConfig: BaseConfig;
+  readonly baseConfig: BaseConfig;
   private static instance: ConfigParser;
 
   private constructor() {
     this.baseConfig = this.parseBaseConfig();
-    console.log(this.baseConfig);
   }
 
   static getInstance(): ConfigParser {
@@ -21,7 +19,8 @@ export class ConfigParser {
     return ConfigParser.instance;
   }
 
-  parseBaseConfig(workspaceRoot = ''): BaseConfig {
+  parseBaseConfig(): BaseConfig {
+    const workspaceRoot = process.env.BEYONDLINT_WORKSPACE_ROOT || '';
     const configPath =
       workspaceRoot === ''
         ? '.beyondlint.base.json'
@@ -56,6 +55,10 @@ export class ConfigParser {
    * Note: It does not merge with the base config!
    */
   parseProjectConfig(filePath: string): ProjectConfig {
+    if (!existsSync(filePath)) {
+      throw new Error(`Project config file does not exist at ${filePath}`);
+    }
+
     try {
       const configContent = readFileSync(filePath, 'utf-8');
       const json = JSON.parse(configContent);
@@ -103,7 +106,7 @@ function parsePlugins(json: any): Plugins {
 
   return json.plugins.map((plugin: any) => {
     if (typeof plugin === 'string' && isName(plugin)) {
-      return { plugin };
+      return { plugin, options: {} };
     }
 
     if (
@@ -195,12 +198,6 @@ function parseActions(actions: any): ActionsConfig {
     const enabled = objectKeys.includes('enabled')
       ? Boolean((action as any).enabled)
       : true;
-    const forwardMessage = objectKeys.includes('forwardMessage')
-      ? Boolean((action as any).forwardMessage)
-      : false;
-    const forwardResult = objectKeys.includes('forwardResult')
-      ? Boolean((action as any).forwardResult)
-      : false;
     const options = objectKeys.includes('options')
       ? (action as any).options
       : {};
@@ -211,8 +208,6 @@ function parseActions(actions: any): ActionsConfig {
 
     actionsConfig[name] = {
       enabled,
-      forwardMessage,
-      forwardResult,
       options,
     };
   }
