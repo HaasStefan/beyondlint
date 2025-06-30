@@ -4,4 +4,5 @@
 - [x] Parse Project Config and merge with Base config
 - [x] Traverse Workspace and get all config files based on .gitignore for folders to ignore.
 - [ ] Get all git diff files, then group by project config file paths (needed before run)
+- [x] If file is .gitignore while traversing, create new ig and add .gitignore for getting config files
 - [ ] Better pruneExternalDeps matching (secondary entrypoints, e.g.: @angular/core/...)

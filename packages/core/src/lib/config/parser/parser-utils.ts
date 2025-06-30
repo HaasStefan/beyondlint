@@ -25,9 +25,8 @@ export function findAllProjectConfigs(): string[] {
   return configFiles;
 }
 
-function readGitIgnore(workspaceRoot: string): string[] {
-  const gitIgnorePath =
-    workspaceRoot === '' ? '.gitignore' : `${workspaceRoot}/.gitignore`;
+function readGitIgnore(folder: string): string[] {
+  const gitIgnorePath = folder === '' ? '.gitignore' : `${folder}/.gitignore`;
 
   try {
     const gitIgnoreContent = readFileSync(gitIgnorePath, 'utf-8');
@@ -55,7 +54,12 @@ function getConfigFilesRecursively(dir: string, ig: ignore.Ignore): string[] {
     }
 
     if (entry.isDirectory()) {
-      configFiles.push(...getConfigFilesRecursively(fullPath, ig));
+      if (entries.some((e) => e.name === '.gitignore')) {
+        const newIg = ignore().add(ig).add(readGitIgnore(fullPath));
+        configFiles.push(...getConfigFilesRecursively(fullPath, newIg));
+      } else {
+        configFiles.push(...getConfigFilesRecursively(fullPath, ig));
+      }
     } else if (entry.isFile() && entry.name === '.beyondlint.json') {
       configFiles.push(fullPath);
     }
@@ -69,7 +73,9 @@ function getBaseDirectories(
   ig: ignore.Ignore
 ): string[] {
   const baseDirs: string[] = [];
-  const entries = readdirSync(workspaceRoot == '' ? '.' : workspaceRoot, { withFileTypes: true });
+  const entries = readdirSync(workspaceRoot == '' ? '.' : workspaceRoot, {
+    withFileTypes: true,
+  });
 
   for (const entry of entries) {
     const path = join(workspaceRoot, entry.name);
