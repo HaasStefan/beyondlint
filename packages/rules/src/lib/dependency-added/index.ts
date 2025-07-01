@@ -107,8 +107,8 @@ async function runGitDiffCommandAsync(
   filePath: string,
   gitOptions: GitOptions
 ): Promise<string> {
-  const { head, base } = gitOptions;
-  const command = `git diff ${base}...${head} -- ${filePath}`;
+  const { head, base } = gitOptions;  
+  const command = `git --no-pager diff --diff-filter=AM ${base} ${head} -- ${filePath}`;
 
   return new Promise((resolve, reject) => {
     exec(command, (error, stdout, stderr) => {
@@ -120,6 +120,7 @@ async function runGitDiffCommandAsync(
         console.error(`Git diff stderr: ${stderr}`);
         reject(new Error(stderr));
       }
+
       resolve(stdout);
     });
   });
