@@ -1,11 +1,18 @@
 import { existsSync, readFileSync } from 'node:fs';
-import { BaseConfig, Plugins } from '../models/base-config.js';
+import {
+  BaseConfig,
+  DEFAULT_GIT_OPTIONS,
+  GitOptions,
+  Plugins,
+} from '../models/base-config.js';
 import { isName } from '../../name.js';
-import { RuleConfig, RulesConfig } from '../models/rules-config.js';
+import { DEFAULT_PROCESSING_MODE, RuleConfig, RulesConfig } from '../models/rules-config.js';
 import { ActionsConfig } from '../models/actions-config.js';
 import { ProjectConfig } from '../models/project-config.js';
+
 export class ConfigParser {
   readonly baseConfig: BaseConfig;
+  baseConfigFilePath?: string;
   private static instance: ConfigParser;
 
   private constructor() {
@@ -26,6 +33,8 @@ export class ConfigParser {
         ? '.beyondlint.base.json'
         : `${workspaceRoot}/.beyondlint.base.json`;
 
+    this.baseConfigFilePath = configPath;
+
     try {
       const configContent = readFileSync(configPath, 'utf-8');
       const json = JSON.parse(configContent);
@@ -36,9 +45,11 @@ export class ConfigParser {
 
       const plugins = parsePlugins(json);
       const rules = parseRules(json);
+      const gitOptions = parseGitOptions(json);
 
       return {
         plugins,
+        gitOptions,
         rules,
       };
     } catch (error) {
@@ -68,23 +79,26 @@ export class ConfigParser {
       }
 
       const objectKeys = Object.keys(json);
-      
+
       if (!objectKeys.includes('extends') && typeof json.extends !== 'string') {
         throw new Error('Project config must have a valid "extends" property');
       }
 
       const extendsConfig = json.extends as string;
-      const sourceRoot = objectKeys.includes('sourceRoot') ? json.sourceRoot : null; // null for nested inheritance
-      const tsconfigPath = objectKeys.includes('tsconfigPath') ? json.tsconfigPath : null;
+      const sourceRoot = objectKeys.includes('sourceRoot')
+        ? json.sourceRoot
+        : null; // null for nested inheritance
+      const tsconfigPath = objectKeys.includes('tsconfigPath')
+        ? json.tsconfigPath
+        : null;
       const rules = parseRules(json);
 
       return {
         extends: extendsConfig,
         sourceRoot,
         tsconfigPath,
-        rules
+        rules,
       };
-
     } catch (error) {
       throw new Error(
         `Failed to read project config file at ${filePath}: ${
@@ -161,6 +175,9 @@ function parseRule(rule: any): RuleConfig {
   const objectKeys = Object.keys(rule);
 
   const enabled = objectKeys.includes('enabled') ? Boolean(rule.enabled) : true;
+  const processingMode = objectKeys.includes('processingMode')
+    ? (rule.processingMode as 'project' | 'file')
+    : DEFAULT_PROCESSING_MODE;
   const options = objectKeys.includes('options') ? rule.options : {};
 
   if (typeof options !== 'object' || options === null) {
@@ -173,6 +190,7 @@ function parseRule(rule: any): RuleConfig {
 
   return {
     enabled,
+    processingMode,
     options,
     actions,
   };
@@ -213,4 +231,28 @@ function parseActions(actions: any): ActionsConfig {
   }
 
   return actionsConfig;
+}
+
+function parseGitOptions(json: any): GitOptions {
+  if (!Object.keys(json).includes('gitOptions')) {
+    return {
+      base: process.env.BEYONDLINT_GIT_BASE || DEFAULT_GIT_OPTIONS.base,
+      head: process.env.BEYONDLINT_GIT_HEAD || DEFAULT_GIT_OPTIONS.head,
+    };
+  }
+
+  const base: string =
+    'base' in json.gitOptions && typeof json.gitOptions.base === 'string'
+      ? json.gitOptions.base
+      : process.env.BEYONDLINT_GIT_BASE || DEFAULT_GIT_OPTIONS.base;
+
+  const head: string =
+    'head' in json.gitOptions && typeof json.gitOptions.head === 'string'
+      ? json.gitOptions.head
+      : process.env.BEYONDLINT_GIT_HEAD || DEFAULT_GIT_OPTIONS.head;
+
+  return {
+    base,
+    head,
+  };
 }

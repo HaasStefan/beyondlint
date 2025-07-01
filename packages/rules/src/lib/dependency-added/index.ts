@@ -1,13 +1,15 @@
 import { exec } from 'node:child_process';
 import { getAllDeps } from './utils/get-all-deps.js';
 import { pruneExternalDeps } from './utils/external-deps.js';
-import { DependencyAddedResult, GitOptions } from './utils/models.js';
+import { DependencyAddedResult } from './utils/models.js';
+import { ConfigParser } from '@beyondlint/core';
+import { GitOptions } from '@beyondlint/core';
 
 export async function dependencyAddedRule(
   projectRoot: string,
   allowList: string[],
-  gitOptions: GitOptions = { head: 'HEAD', base: 'origin/main' }
 ): Promise<DependencyAddedResult | null> {
+  const { gitOptions } = ConfigParser.getInstance().baseConfig;
   const { added } = await getLinesFromGitDiffAsync(projectRoot, gitOptions);
   const imports = added.filter(
     (line) =>
@@ -70,7 +72,7 @@ export async function dependencyAddedRule(
     );
 
   if (violations.length > 0) {
-    return { moduleSpecifiers: violations, projectRoot, allowList, gitOptions };
+    return { moduleSpecifiers: violations, projectRoot, allowList };
   }
 
   return null;

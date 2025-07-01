@@ -4,7 +4,7 @@ describe('getChangedFilesInDiff', () => {
   it('should return an array of changed files between two commits', () => {
     const base = 'b99c1d2d0651079c13ca0862f7d180aa030fcf3d';
     const head = 'ace46d449ac7bf9879c714ca056a0b094c2ca8a4';
-    const changedFiles = getChangedFilesInDiff(base, head);
+    const changedFiles = getChangedFilesInDiff({ base, head });
 
     expect(Array.isArray(changedFiles)).toBe(true);
     expect(changedFiles).toEqual(expect.arrayContaining(expectedFiles));

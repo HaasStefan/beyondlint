@@ -24,6 +24,7 @@ export function mergeProjectConfiguration(
     tsconfigPath = config.tsconfigPath || tsconfigPath;
     sourceRoot = config.sourceRoot || sourceRoot;
 
+
     rules = {
       ...rules,
       ...config.rules,

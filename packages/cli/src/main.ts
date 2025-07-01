@@ -25,10 +25,10 @@ program
     await dependencyAddedRule(
       'packages/cli',
       ['@beyondlint/abc'],
-    {
-      base: 'b21e8019ed34641b337113b1861a048f75708267',
-      head: '745e0ba74b466fadfd05da984d600a2e6b21fa80',
-    }
+    // {
+    //   base: 'b21e8019ed34641b337113b1861a048f75708267',
+    //   head: '745e0ba74b466fadfd05da984d600a2e6b21fa80',
+    // }
     );
   });
 

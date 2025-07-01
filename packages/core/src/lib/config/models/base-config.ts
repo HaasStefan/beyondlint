@@ -8,8 +8,18 @@ export interface PluginConfig {
 
 export type Plugin = Name | PluginConfig;
 export type Plugins = Plugin[];
-
 export interface BaseConfig {
   plugins?: Plugins;
+  gitOptions: GitOptions;
   rules?: RulesConfig;
 }
+
+export interface GitOptions {
+  base?: string;
+  head?: string;
+}
+
+export const DEFAULT_GIT_OPTIONS: GitOptions = {
+  base: "origin/main",
+  head: "HEAD",
+}; 

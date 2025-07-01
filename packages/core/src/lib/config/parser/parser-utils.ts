@@ -55,7 +55,7 @@ function getConfigFilesRecursively(dir: string, ig: ignore.Ignore): string[] {
 
     if (entry.isDirectory()) {
       if (entries.some((e) => e.name === '.gitignore')) {
-        const newIg = ignore().add(ig).add(readGitIgnore(fullPath));
+        const newIg = ignore().add(ig).add(readGitIgnore(dir));
         configFiles.push(...getConfigFilesRecursively(fullPath, newIg));
       } else {
         configFiles.push(...getConfigFilesRecursively(fullPath, ig));

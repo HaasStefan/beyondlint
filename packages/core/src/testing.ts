@@ -1,0 +1,1 @@
+export { setupMockConfigFiles, mockBaseConfig, mockNestedProjectConfig, mockProjectConfig } from './lib/testing/config.mock.js';

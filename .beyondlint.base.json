@@ -8,15 +8,16 @@
       }
     }
   ],
+  "gitOptions": {
+    "base": "origin/main",
+    "head": "HEAD"
+  },
   "rules": {
     "@beyondlint/internal-dependency-added": {
       "enabled": true,
+      "processingMode": "project",
       "options": {
-        "allowList": [],
-        "gitOptions": {
-          "base": "main",
-          "head": "HEAD"
-        }
+        "allowList": []
       },
       "actions": {
         "@beyondlint/github-pr-comment": {
