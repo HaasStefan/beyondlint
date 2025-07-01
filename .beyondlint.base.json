@@ -9,8 +9,8 @@
     }
   ],
   "gitOptions": {
-    "base": "b21e8019ed34641b337113b1861a048f75708267",
-    "head": "745e0ba74b466fadfd05da984d600a2e6b21fa80"
+    "base": "bd8f28e5bcf845f6dc24adb64fa46e6e12c69bdb",
+    "head": "efbf6363d10822ecea8de2b728bbb16d9c26325c"
   },
   "rules": {
     "@beyondlint/internal-dependency-added": {
